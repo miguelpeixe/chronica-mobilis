@@ -1,0 +1,18 @@
+{
+  "name": "chronica-mobilis",
+  "version": "0.0.0",
+  "description": "Location server and map visualization platform for [Chronica Mobilis](http://chronicamobilis.net) project.",
+  "main": "index.js",
+  "dependencies": {
+  	"express": "latest",
+    "serve-index": "latest",
+    "moment": "latest"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "postinstall": "mkdir -p data",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Miguel Peixe <miguel@cardume.art.br>",
+  "license": "ISC"
+}
