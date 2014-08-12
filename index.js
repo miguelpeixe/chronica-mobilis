@@ -35,6 +35,8 @@ app.get('/reset', function(req, res) {
 
 	initData();
 
+	res.send('New CSV initialized.');
+
 });
 
 app.all('/updateLocation/:userId', function(req, res) {
