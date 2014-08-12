@@ -52,7 +52,11 @@ app.all('/updateLocation/:userId', function(req, res) {
 
 		fs.appendFileSync('data/' + filename, reqData.userId + ',' + reqData.lat + ',' + reqData.lon + ',' + reqData.time + '\r\n');
 
+		res.send(reqData);
+
 	}
+
+	res.send();
 
 });
 
