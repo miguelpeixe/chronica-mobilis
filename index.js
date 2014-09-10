@@ -12,6 +12,7 @@ app.use(function(req, res, next){
 });
 
 app.use('/data', serveIndex('data', {'icons': true, 'view': 'details'}));
+app.use('/', express.static(__dirname + '/dist'));
 
 var users = [],
 	data = [],
@@ -45,26 +46,41 @@ app.all('/updateLocation/:userId', function(req, res) {
 
 		var reqData = {
 			userId: req.params.userId,
-			lat: req.query.lat,
-			lon: req.query.lon,
+			lat: parseFloat(req.query.lat),
+			lon: parseFloat(req.query.lon),
 			time: moment().format()
 		};
 
 		data.push(reqData);
 
-		fs.appendFileSync('data/' + filename, reqData.userId + ',' + reqData.lat + ',' + reqData.lon + ',' + reqData.time + '\r\n');
+		fs.appendFile('data/' + filename, reqData.userId + ',' + reqData.lat + ',' + reqData.lon + ',' + reqData.time + '\r\n', function(err) {
+			if(err) {
+				res.send(err);
+			} else {
+				res.send(reqData);
+			}
+		});
 
-		res.send(reqData);
 
+	} else {
+		res.send();
 	}
 
-	res.send();
+});
 
+app.get('/data/latest', function(req, res) {
+	res.send(data);
 });
 
 app.get('/data/:file', function(req, res) {
 	res.set('Content-Type', 'text/plain');
-	res.send(fs.readFileSync('data/' + req.params.file));
+	fs.readFile('data/' + req.params.file, function(err, data) {
+		res.send(data);
+	});
+});
+
+app.get('/*', function(req, res) {
+	res.sendfile('dist/views/index.html');
 });
 
 var port = process.env.PORT || 8000;
