@@ -58,7 +58,7 @@ var map = cm();
 
 ### Deploy changes
 
-After you change the code in the src directory, you'll need to deploy running this on your terminal:
+After you change the code in the `src` directory, you'll need to deploy running this on your terminal:
 
 ```
 $ npm run build
@@ -74,7 +74,7 @@ Both scripts are shortcuts to execute `grunt`.
 
 ### Options
 
-`cm` receives an object with several options. Returns a [L.Map](http://leafletjs.com/reference.html#map-class) object so you can customize the map all you want.
+`cm` receives an object with options. Returns a [L.Map](http://leafletjs.com/reference.html#map-class) so you can customize the map all you want.
 
 Example with custom tiles:
 
@@ -144,7 +144,7 @@ Discoveries are callback functions that can be executed when a ground user pass 
 ```javascript
 var options = {};
 
-config.discoveries = [
+options.discoveries = [
 	{
 		user: 'someuser',
 		coords: [1,1],
@@ -168,3 +168,7 @@ config.discoveries = [
 
 var map = cm(options);
 ```
+
+#### Further development
+
+If you'd like to create new features connected to your map, use [Leaflet documentation](http://leafletjs.com/reference.html) to work on the `L.Map` object returned by the `cm` constructor.
