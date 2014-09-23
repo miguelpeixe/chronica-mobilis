@@ -1,126 +1,60 @@
-window.L = require('leaflet');
-window.$ = window.jQuery = require('jquery');
-var _ = require('underscore');
-var moment = require('moment');
+var cm = require('./cm');
 
-L.Icon.Default.imagePath = 'css/images';
+/*
+ * Initializing our config var with basic options
+ */
+var config = {
+	tiles: 'http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png', // TileLayer
+};
 
-var map = L.map('map', {zoom: 2, center: [0,0]});
+/*
+ * Markers and lines options and styling
+ * Marker options documentation: http://leafletjs.com/reference.html#marker
+ * PolyLine options documentation: http://leafletjs.com/reference.html#polyline (see http://leafletjs.com/reference.html#path for further options)
+ */
+config.layerOptions = {
+	'default': {
+		line: {
+			color: '#333'
+		},
+		marker: {
+			// marker options goes here
+		}
+	},
+	'miguelpeixe': {
+		line: {
+			color: '#fff'
+		},
+		marker: {
+			// marker options goes here
+		}
+	}
+};
 
-map.addLayer(L.tileLayer('http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png'))
+/*
+ * Array of interactions to execute when ground user is close to determined position
+ */
+config.discoveries = [
+	{
+		user: 'miguelpeixe', // null or false to exec on all users
+		coords: [1,1], // latitude and longitude coordinates
+		distance: 20, // max distance radius in meters. Default is 20
+		init: true, // should it run when this location has already been passed by the ground user. Default is false
+		callback: function(pos) {
+			/*
+			 * Magic goes here
+			 * Receives an object with user, coords, and date
+			 */
+			console.log(pos);
+		}
+	},
+	{
+		coords: [-54,13],
+		distance: 10,
+		callback: function(pos) {
+			alert('someone is passing by here!');
+		}
+	}
+];
 
-var featureGroup = L.featureGroup().addTo(map);
-
-var markers = {};
-var polyLines = {};
-
-var raw;
-var data = {};
-
-$.get('/data/latest', function(d) {
-
-	raw = d;
-
-	appendData(d);
-
-	populateMap();
-
-	setInterval(function() {
-
-		$.get('/data/latest', function(d) {
-
-			var newData = _.filter(d, function(item) { return !_.findWhere(raw, item); });
-
-			raw = d;
-
-			var appended = appendData(newData);
-
-			appendToMap(appended);
-
-		}, 'json');
-
-	}, 5 * 1000);
-
-}, 'json');
-
-function appendData(d) {
-
-	var appended = {};
-
-	_.each(d, function(pos) {
-
-		if(!data[pos.userId])
-			data[pos.userId] = [];
-
-		if(!appended[pos.userId])
-			appended[pos.userId] = [];
-
-		var parsedPos = {
-			coords: L.latLng([pos.lat,pos.lon]),
-			time: pos.time
-		};
-
-		appended[pos.userId].push(parsedPos);
-		data[pos.userId].push(parsedPos);
-
-	});
-
-	return appended;
-
-}
-
-function populateMap() {
-
-	var userIds = _.keys(data);
-
-	_.each(userIds, function(user) {
-
-		var latLons = _.map(data[user], function(pos) { return pos.coords; });
-
-		markers[user] = L.featureGroup().addTo(map);
-
-		_.each(data[user], function(pos) {
-			getMarker(pos).addTo(markers[user]);
-		});
-
-		polyLines[user] = L.polyline(latLons).addTo(featureGroup);
-
-	});
-
-	map.fitBounds(featureGroup.getBounds());
-
-}
-
-function appendToMap(d) {
-
-	var userIds = _.keys(d);
-
-	_.each(userIds, function(user) {
-
-		_.each(d[user], function(pos) {
-
-			getMarker(pos).addTo(markers[user]);
-
-			polyLines[user].addLatLng(pos.coords);
-
-		});
-
-	});
-
-}
-
-function getMarker(pos) {
-
-	var marker = L.marker(pos.coords, {
-		riseOnHover: true
-	})
-
-	marker.bindPopup('<p>' + moment(pos.time).fromNow() + '</p>')
-
-	setInterval(function() {
-		marker.bindPopup('<p>' + moment(pos.time).fromNow() + '</p>')		
-	}, 10 * 1000);
-
-	return marker;
-
-}
+var map = cm(config);

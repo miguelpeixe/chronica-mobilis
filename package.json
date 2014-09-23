@@ -22,6 +22,8 @@
   "scripts": {
     "start": "node index.js",
     "postinstall": "mkdir -p data dist && ./node_modules/grunt-cli/bin/grunt build",
+    "build": "./node_modules/grunt-cli/bin/grunt build",
+    "watch": "./node_modules/grunt-cli/bin/grunt watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Miguel Peixe <miguel@cardume.art.br>",
